@@ -5,7 +5,7 @@ import * as yaml from "yaml";
 export const Config = {
 
   info: {
-    name: "percona-writer-elactor-operator"
+    name: "percona-writer-elector-operator"
   },
 
   logging: {

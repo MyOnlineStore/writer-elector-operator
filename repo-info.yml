@@ -2,7 +2,7 @@
 templates: [nodejs]
 
 project:
-  name: percona-writer-elactor-operator
+  name: percona-writer-elector-operator
 
 deploy:
   stage:
