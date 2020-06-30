@@ -16,7 +16,7 @@ env:
   GKE_ZONE: europe-west4
   GKE_CLUSTER: mos-eu01
   APP_ENV: prod
-  NAMESPACE: infra
+  NAMESPACE: operator
 
   PROJECT_NAME: percona-writer-elector-operator
   HELM_VERSION: v3.0.2

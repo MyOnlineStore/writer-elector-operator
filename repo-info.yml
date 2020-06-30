@@ -9,5 +9,5 @@ deploy:
     enabled: false
   prod:
     enabled: true
-    namespace: infra
+    namespace: operator
     trigger: master
