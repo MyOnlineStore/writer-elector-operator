@@ -1,0 +1,116 @@
+name: "Deploy to production"
+
+on:
+  push:
+    branches:
+    - master
+
+env:
+  GITHUB_SHA: ${{ github.sha }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MOS_EU_GITHUB_TOKEN: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
+  MOS_EU_GITHUB_USERNAME: ${{ secrets.MOS_EU_GITHUB_USERNAME }}
+  GKE_KEY: ${{ secrets.GKE_KEY }}
+
+  GKE_PROJECT: myonlinestore-eu
+  GKE_ZONE: europe-west4
+  GKE_CLUSTER: mos-eu01
+  APP_ENV: prod
+  NAMESPACE: infra
+
+  PROJECT_NAME: percona-writer-elactor-operator
+  HELM_VERSION: v3.0.2
+  CHART_VERSION: 0.2.0
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    # Setup gcloud CLI
+    - name: Setup gcloud CLI
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '275.0.0'
+        service_account_key: ${{ secrets.GKE_KEY }}
+
+    # Configure docker to use the gcloud command-line tool as a credential helper
+    - name: Setup docker authentication
+      run: |
+        # Set up docker to authenticate
+        # via gcloud command-line tool.
+        gcloud auth configure-docker
+
+    # Build the Docker image
+    - name: Build Image
+      env:
+        DOCKER_BUILDKIT: 1
+      run: |
+        docker build -t eu.gcr.io/$GKE_PROJECT/$PROJECT_NAME:$GITHUB_SHA \
+          --label GITHUB_SHA="$GITHUB_SHA" \
+          --label GITHUB_REF="$GITHUB_REF" .
+
+    # Push the Docker image to Google Container Registry
+    - name: Publish
+      run: |
+        docker push eu.gcr.io/$GKE_PROJECT/$PROJECT_NAME:$GITHUB_SHA
+
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    needs: build
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    # Setup gcloud CLI
+    - name: Setup gcloud CLI
+      run: |
+        echo $GKE_KEY | base64 -d > key.json
+        /home/github-actions/runner/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=key.json
+        rm -f key.json
+
+    # Setup Private Helm repository
+    - name: Setup Helm Client and Repository
+      run: |
+        helm repo add --username $MOS_EU_GITHUB_USERNAME --password $MOS_EU_GITHUB_TOKEN mos 'https://raw.githubusercontent.com/MyOnlineStore/helm-repo/master/'
+        helm repo update
+
+    # Deploy the Docker image to the GKE cluster using the php-deployment helm chart
+    - name: Deploy
+      run: |
+        # Get the credentials for the cluster from gcloud cli
+        /home/github-actions/runner/google-cloud-sdk/bin/gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+
+        # Get image checksum for the image that will be deployed.
+        IMAGE_HASH=$(/home/github-actions/runner/google-cloud-sdk/bin/gcloud container images describe eu.gcr.io/$GKE_PROJECT/$PROJECT_NAME:$GITHUB_SHA --format=json | jq .image_summary.digest --raw-output)
+
+        VALUE_FILES=""
+        if [ -f ./k8s/base-values.yml ]; then
+          VALUE_FILES="-f ./k8s/base-values.yml"
+        fi
+        if [ -f ./k8s/base-values-$APP_ENV.yml ]; then
+          VALUE_FILES="$VALUE_FILES -f ./k8s/base-values-$APP_ENV.yml"
+        fi
+        if [ -f ./k8s/values.yml ]; then
+          VALUE_FILES="$VALUE_FILES -f ./k8s/values.yml"
+        fi
+        if [ -f ./k8s/values-$APP_ENV.yml ]; then
+          VALUE_FILES="$VALUE_FILES -f ./k8s/values-$APP_ENV.yml"
+        fi
+
+        # Deploy to the GKE cluster using helm
+        helm upgrade --install $PROJECT_NAME mos/deployment \
+          --version $CHART_VERSION \
+          $VALUE_FILES \
+          --set fullnameOverride=$PROJECT_NAME \
+          --set nameOverride=$PROJECT_NAME \
+          --set image.name=$PROJECT_NAME \
+          --set image.tag=$GITHUB_SHA \
+          --set image.hash=$IMAGE_HASH \
+          --set cluster.name=$GKE_CLUSTER \
+          --namespace $NAMESPACE \
+          --wait
