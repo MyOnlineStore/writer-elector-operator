@@ -1,0 +1,13 @@
+# must be defined in [] yaml structure for bash script to work
+templates: [nodejs]
+
+project:
+  name: percona-writer-elactor-operator
+
+deploy:
+  stage:
+    enabled: false
+  prod:
+    enabled: true
+    namespace: infra
+    trigger: master

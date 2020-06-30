@@ -1,0 +1,13 @@
+.idea
+node_modules
+npm-debug.log
+
+# docker
+/.env
+/docker-compose.yml
+
+# typescript
+.v8*
+!/dist/.gitkeep
+/dist/*
+ts-node*

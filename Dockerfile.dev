@@ -1,0 +1,16 @@
+FROM node:12-alpine
+
+WORKDIR /srv/app
+
+# You have to specify "--unsafe-perm" with npm ci
+# when running as root.  Failing to do this can cause
+# install to appear to succeed even if a preinstall
+# script fails, and may have other adverse consequences
+# as well.
+# This command will also cat the npm-debug.log file after the
+# build, if it exists.
+COPY package.json package-lock.json tsconfig.json ./
+RUN npm install --save-exact
+
+COPY . ./
+CMD npm run start:dev

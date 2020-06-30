@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "pretty": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": false,
+    "lib": [
+      "es2015"
+    ],
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "target": "es2016",
+    "module": "commonjs",
+    "outDir": "dist",
+    "strict": true,
+    "noImplicitAny": true
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}

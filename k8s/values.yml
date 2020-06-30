@@ -1,0 +1,25 @@
+
+replicas: 1
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 50Mi
+  limits:
+    cpu: 50m
+    memory: 50Mi
+
+service:
+  port: 4000
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+
+prometheus:
+  enabled: true

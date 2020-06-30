@@ -1,0 +1,1 @@
+# percona-writer-elactor-operator
