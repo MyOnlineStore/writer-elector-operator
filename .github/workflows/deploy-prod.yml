@@ -18,7 +18,7 @@ env:
   APP_ENV: prod
   NAMESPACE: infra
 
-  PROJECT_NAME: percona-writer-elactor-operator
+  PROJECT_NAME: percona-writer-elector-operator
   HELM_VERSION: v3.0.2
   CHART_VERSION: 0.2.0
 
