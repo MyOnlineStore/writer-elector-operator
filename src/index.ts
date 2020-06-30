@@ -32,10 +32,7 @@ async function setBuildInfo(): Promise<void> {
     labelNames: ["version"]
   });
 
-  let packageJsonFile = pathUtil.join(__dirname, "package.json");
-  if (process.env.NODE_ENV !== "production") {
-    packageJsonFile = pathUtil.join(__dirname, "../package.json");
-  }
+  let packageJsonFile = pathUtil.join(__dirname, "../package.json");
   let packageJson = JSON.parse(await readFile(packageJsonFile));
 
   buildInfoGauge.set({version: packageJson.version}, 1);
