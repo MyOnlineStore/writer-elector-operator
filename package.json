@@ -3,7 +3,7 @@
   "homepage": "https://github.com/MyOnlineStore/percona-writer-elactor-operator",
   "description": "K8s operator for creating a single writer endpoint for a percona cluster created with the pxc-operator",
   "version": "0.1.0",
-  "license": "proprietary",
+  "license": "GNU GPLv3",
   "private": true,
   "dependencies": {
     "express": "^4.17.1",
