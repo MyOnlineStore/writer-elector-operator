@@ -1,1 +1,2 @@
 # percona-writer-elactor-operator
+K8s operator for creating a single writer endpoint for a percona cluster created with the [pxc-operator](https://www.percona.com/doc/kubernetes-operator-for-pxc/index.html).
