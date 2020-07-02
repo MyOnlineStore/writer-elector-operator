@@ -10,7 +10,7 @@ resources:
     memory: 50Mi
 
 service:
-  port: 4000
+  port: 8080
 
 livenessProbe:
   httpGet:

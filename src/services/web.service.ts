@@ -1,7 +1,6 @@
 
 import * as express from "express";
 import { Config } from "../config";
-import { register } from "prom-client";
 
 /**
  * Webserver for health and metrics endpoints
@@ -12,16 +11,14 @@ export class WebServer {
 
   }
 
-  public async init(): Promise<void> {
+  public async init(installCallback: (app: express.Application) => Promise<void>): Promise<void> {
     const app = express();
-
-    app.get("/metrics", (req, res, next) => {
-      res.status(200).send(register.metrics());
-    });
 
     app.get("/health", (req, res, next) => {
       res.status(200).send("healthy");
     });
+
+    await installCallback(app);
 
     app.use((req, res, next) => {
       res.status(404).send(`
