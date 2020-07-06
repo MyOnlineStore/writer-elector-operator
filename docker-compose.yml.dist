@@ -9,3 +9,4 @@ services:
     volumes:
     - ./src:/srv/app/src:ro
     - ./config:/srv/app/config:ro
+    - ~/.kube:/root/.kube:ro

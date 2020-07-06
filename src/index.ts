@@ -4,6 +4,7 @@ import { WebServer } from "./services/web.service";
 import { Gauge } from "prom-client";
 import * as pathUtil from "path";
 import { readFile } from "./helpers/file.helper";
+import { WatchService } from "./services/watch.service";
 
 async function main(): Promise<void> {
   loadEnvs();
@@ -12,7 +13,9 @@ async function main(): Promise<void> {
   await loadFile(configFile);
 
   let webServer = new WebServer();
+  let watchService = new WatchService();
 
+  await watchService.init();
   await webServer.init();
 
   await setBuildInfo();

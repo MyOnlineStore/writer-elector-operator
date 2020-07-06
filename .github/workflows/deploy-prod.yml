@@ -3,7 +3,7 @@ name: "Deploy to production"
 on:
   push:
     branches:
-    - master
+    - '*'
 
 env:
   GITHUB_SHA: ${{ github.sha }}
@@ -16,11 +16,11 @@ env:
   GKE_ZONE: europe-west4
   GKE_CLUSTER: mos-eu01
   APP_ENV: prod
-  NAMESPACE: infra
+  NAMESPACE: operator
 
   PROJECT_NAME: percona-writer-elector-operator
   HELM_VERSION: v3.0.2
-  CHART_VERSION: 0.2.0
+  CHART_VERSION: 0.3.0
 
 jobs:
   build:

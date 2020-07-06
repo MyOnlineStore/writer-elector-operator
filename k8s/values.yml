@@ -23,3 +23,7 @@ readinessProbe:
 
 prometheus:
   enabled: true
+
+serviceAccount:
+  enabled: true
+  name: namespace-operator-percona-writer-elector-operator
