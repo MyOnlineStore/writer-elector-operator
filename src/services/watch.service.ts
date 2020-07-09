@@ -2,6 +2,7 @@
 import { CoreV1Api, KubeConfig, Watch, V1Endpoints, V1Service, V1EndpointAddress } from "@kubernetes/client-node";
 import { Config } from "../config";
 import { Watcher } from "./watcher";
+import { ElectedEndpointModel, ElectedEndpointRole } from "../models/elected-endpoint.model";
 
 export class WatchService {
 
@@ -9,6 +10,8 @@ export class WatchService {
   private readonly apiClient: CoreV1Api;
   private readonly watchers: Watcher<V1Endpoints>[] = [];
   private readonly ignoreNames: string[];
+
+  private endpoints: ElectedEndpointModel[] = [];
 
   constructor() {
     // Init kubernetes client
@@ -50,6 +53,10 @@ export class WatchService {
     }
   }
 
+  public getEndpoints(): ElectedEndpointModel[] {
+    return this.endpoints;
+  }
+
   private async onEndpointChanged(endpoint: V1Endpoints): Promise<void> {
     if (endpoint.metadata && endpoint.metadata.name && endpoint.metadata.namespace && endpoint.subsets && endpoint.subsets.length > 0) {
       // Check if name contains part to ignore
@@ -68,7 +75,6 @@ export class WatchService {
       } catch(e) {
         if (e.statusCode !== 404) {
           throw new Error(`GET /api/v1/namespaces/${namespace}/endpoints/${writerName} failed (${e.statusCode}) ${e.response?.body?.message}`)
-          throw e;
         }
       }
 
@@ -126,6 +132,12 @@ export class WatchService {
         try {
           console.info(`[${new Date().toISOString()}] Delete writer endpoint ${namespace}/${writerName}`)
           await this.apiClient.deleteNamespacedEndpoints(writerName, namespace);
+
+          // Delete endpoint from the metrics cache
+          let index = this.endpoints.findIndex(e => e.name === writerName && e.namespace === namespace);
+          if (index > -1){
+            this.endpoints.splice(index, 1);
+          }
         } catch(e) {
           throw new Error(`DELETE /api/v1/namespaces/${namespace}/endpoints/${writerName} failed (${e.statusCode}) ${e.response?.body?.message}`);
         }
@@ -223,6 +235,24 @@ export class WatchService {
         }
       }
 
+      // Update endpoint in metrics cache
+      let electedEndpoint = this.endpoints.find(e => e.name === writerName && e.namespace === namespace);
+      let electedAddress = newAddresses && newAddresses[0] || currentAddress;
+      let pods = (availableAddresses || []).map((address: V1EndpointAddress) => {
+        return {
+          name: address.targetRef?.name || address.ip,
+          role: electedAddress && address.ip === electedAddress.ip ? ElectedEndpointRole.WRITER : ElectedEndpointRole.READER
+        }
+      });
+      if (electedEndpoint) {
+        electedEndpoint.pods = pods;
+      } else {
+        this.endpoints.push({
+          name: writerName,
+          namespace: namespace,
+          pods: pods
+        });
+      }
     }
   }
 
@@ -242,6 +272,7 @@ export class WatchService {
       }
 
       // Create Endpoint definition
+      let allAddreses: V1EndpointAddress[] | undefined = undefined;
       let electedAddress: V1EndpointAddress | undefined = undefined;
       let newWriterEndpoint: V1Endpoints = {
         apiVersion: "v1",
@@ -253,6 +284,7 @@ export class WatchService {
         },
         subsets: endpoint.subsets.map(subset => {
           // Choose first endpoint
+          allAddreses = subset.addresses;
           if (subset.addresses && subset.addresses.length > 0) {
             electedAddress = subset.addresses[0];
           }
@@ -277,6 +309,18 @@ export class WatchService {
       } else {
         console.warn(`[${new Date().toISOString()}] [${namespace}/${writerName}] Unable to elect writer, no ready endpoints in ${namespace}/${endpoint.metadata.name}`);
       }
+
+      // Add endpoint in metrics cache
+      this.endpoints.push({
+        name: writerName,
+        namespace: namespace,
+        pods: (allAddreses || []).map((address: V1EndpointAddress) => {
+          return {
+            name: address.targetRef?.name || address.ip,
+            role: electedAddress && address.ip === electedAddress.ip ? ElectedEndpointRole.WRITER : ElectedEndpointRole.READER
+          }
+        })
+      });
     }
   }
 

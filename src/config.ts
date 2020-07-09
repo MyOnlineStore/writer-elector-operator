@@ -17,7 +17,7 @@ export const Config = {
   },
 
   server: {
-    port: 4000
+    port: 8080
   },
 
   watch: {

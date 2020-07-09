@@ -1,10 +1,8 @@
 import { loadEnvs, loadFile, Config } from "./config";
 import * as path from "path";
 import { WebServer } from "./services/web.service";
-import { Gauge } from "prom-client";
-import * as pathUtil from "path";
-import { readFile } from "./helpers/file.helper";
 import { WatchService } from "./services/watch.service";
+import { MetricsService } from "./services/metrics.service";
 
 async function main(): Promise<void> {
   loadEnvs();
@@ -14,11 +12,12 @@ async function main(): Promise<void> {
 
   let webServer = new WebServer();
   let watchService = new WatchService();
+  let metricsService = new MetricsService(watchService);
 
   await watchService.init();
-  await webServer.init();
-
-  await setBuildInfo();
+  await webServer.init(async app => {
+    await metricsService.init(app);
+  });
 }
 
 main().then(() => {
@@ -27,16 +26,3 @@ main().then(() => {
   console.error(e);
   process.exit(1);
 });
-
-async function setBuildInfo(): Promise<void> {
-  let buildInfoGauge = new Gauge({
-    name: "build_info",
-    help: "Build info",
-    labelNames: ["version"]
-  });
-
-  let packageJsonFile = pathUtil.join(__dirname, "../package.json");
-  let packageJson = JSON.parse(await readFile(packageJsonFile));
-
-  buildInfoGauge.set({version: packageJson.version}, 1);
-}
