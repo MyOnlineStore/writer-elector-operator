@@ -3,11 +3,11 @@ replicas: 1
 
 resources:
   requests:
-    cpu: 50m
-    memory: 50Mi
+    cpu: 100m
+    memory: 200Mi
   limits:
-    cpu: 50m
-    memory: 50Mi
+    cpu: 100m
+    memory: 200Mi
 
 service:
   port: 8080
