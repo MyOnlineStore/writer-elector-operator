@@ -1,4 +1,4 @@
-name: "Deploy to production"
+name: "Deploy to staging"
 
 on:
   push:
@@ -15,12 +15,12 @@ env:
   GKE_PROJECT: myonlinestore-eu
   GKE_ZONE: europe-west4
   GKE_CLUSTER: mos-eu01
-  APP_ENV: prod
-  NAMESPACE: operator
+  APP_ENV: stage
+  NAMESPACE: stage
 
   PROJECT_NAME: percona-writer-elector-operator
   HELM_VERSION: v3.0.2
-  CHART_VERSION: 0.3.0
+  CHART_VERSION: 0.3.1
 
 jobs:
   build:
