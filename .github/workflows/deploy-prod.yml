@@ -19,8 +19,8 @@ env:
   NAMESPACE: operator
 
   PROJECT_NAME: percona-writer-elector-operator
-  HELM_VERSION: v3.0.2
-  CHART_VERSION: 0.3.0
+  HELM_VERSION: v3.2.4
+  CHART_VERSION: 0.3.3
 
 jobs:
   build:
