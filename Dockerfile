@@ -18,7 +18,7 @@ RUN npm ci --unsafe-perm || \
 COPY . ./
 RUN npm run build
 
-FROM node:10-alpine
+FROM node:12-alpine
 
 WORKDIR /srv/app
 EXPOSE 4000
