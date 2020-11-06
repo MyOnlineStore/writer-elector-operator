@@ -2,8 +2,3 @@
 # Managed by github.com/MyOnlineStore/repo-templating
 # Changing this file will end badly, be wary.
 
-node_modules
-npm-debug.log
-.dockerignore
-Dockerfile
-.git
