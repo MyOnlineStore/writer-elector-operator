@@ -6,8 +6,8 @@ project:
 
 deploy:
   stage:
-    enabled: false
+    enabled: true
+    namespace: operator
   prod:
     enabled: true
     namespace: operator
-    trigger: master
