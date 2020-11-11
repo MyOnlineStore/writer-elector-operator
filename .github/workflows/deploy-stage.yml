@@ -1,9 +1,9 @@
-name: "Deploy to production"
+name: "Deploy to staging"
 
 on:
   push:
-    tags:
-    - '*'
+    branches:
+    - master
 
 env:
   GITHUB_SHA: ${{ github.sha }}
@@ -12,10 +12,10 @@ env:
   MOS_EU_GITHUB_USERNAME: ${{ secrets.MOS_EU_GITHUB_USERNAME }}
   GKE_KEY: ${{ secrets.GKE_KEY }}
 
-  GKE_PROJECT: myonlinestore-eu
+  GKE_PROJECT: myonlinestore-dev
   GKE_ZONE: europe-west4
-  GKE_CLUSTER: mos-eu01
-  APP_ENV: prod
+  GKE_CLUSTER: mos-dev01
+  APP_ENV: stage
   NAMESPACE: operator
 
   PROJECT_NAME: percona-writer-elector-operator
@@ -36,7 +36,7 @@ jobs:
       with:
         version: '275.0.0'
 
-        service_account_key: ${{ secrets.GKE_KEY }}
+        service_account_key: ${{ secrets.GKE_DEVELOP_KEY }}
 
     # Configure docker to use the gcloud command-line tool as a credential helper
     - name: Setup docker authentication
