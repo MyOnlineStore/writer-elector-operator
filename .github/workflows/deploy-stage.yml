@@ -10,7 +10,9 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MOS_EU_GITHUB_TOKEN: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
   MOS_EU_GITHUB_USERNAME: ${{ secrets.MOS_EU_GITHUB_USERNAME }}
-  GKE_KEY: ${{ secrets.GKE_KEY }}
+
+
+  GKE_KEY: ${{ secrets.GKE_DEVELOP_KEY }}
 
   GKE_PROJECT: myonlinestore-dev
   GKE_ZONE: europe-west4
