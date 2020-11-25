@@ -10,6 +10,8 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MOS_EU_GITHUB_TOKEN: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
   MOS_EU_GITHUB_USERNAME: ${{ secrets.MOS_EU_GITHUB_USERNAME }}
+
+
   GKE_KEY: ${{ secrets.GKE_KEY }}
 
   GKE_PROJECT: myonlinestore-eu
@@ -109,6 +111,7 @@ jobs:
           $VALUE_FILES \
           --set fullnameOverride=$PROJECT_NAME \
           --set nameOverride=$PROJECT_NAME \
+          --set image.repository=eu.gcr.io/$GKE_PROJECT \
           --set image.name=$PROJECT_NAME \
           --set image.tag=$GITHUB_SHA \
           --set image.hash=$IMAGE_HASH \
