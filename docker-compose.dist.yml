@@ -4,16 +4,16 @@
 
 version: '3'
 services:
-
   percona-writer-elector-operator:
     build:
       context: .
       dockerfile: Dockerfile.dev
+
     volumes:
     - ./src:/srv/app/src:ro
     - ./config:/srv/app/config:ro
 
-
+networks:
 
 #volumes:
 #    app-sync: # OSX users need to enable this section
