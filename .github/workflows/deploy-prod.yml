@@ -20,7 +20,7 @@ env:
   APP_ENV: prod
   NAMESPACE: operator
 
-  PROJECT_NAME: percona-writer-elector-operator
+  PROJECT_NAME: writer-elector-operator
   HELM_VERSION: v3.2.4
   CHART_VERSION: 0.3.3
 

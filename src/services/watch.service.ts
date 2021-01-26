@@ -266,9 +266,11 @@ export class WatchService {
       let namespace = endpoint.metadata.namespace;
       let newLabels = endpoint.metadata.labels || {};
 
-      for (let pair of Config.writer.overwrite.labels.split(",")) {
-        let splittedPair = pair.split("=");
-        newLabels[splittedPair[0].trim()] = splittedPair[1].trim();
+      if (Config.writer.overwrite.labels) {
+        for (let pair of Config.writer.overwrite.labels.split(",")) {
+          let splittedPair = pair.split("=");
+          newLabels[splittedPair[0].trim()] = splittedPair[1].trim();
+        }
       }
 
       // Create Endpoint definition
