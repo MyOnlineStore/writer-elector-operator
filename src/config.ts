@@ -22,8 +22,7 @@ export const Config = {
 
   watch: {
     namespaces: "*",
-    selector: "myonlinestore.com/writer-elector=writer-elector-operator",
-    ignore: "-unready"
+    selector: "myonlinestore.com/writer-elector=writer-elector-operator"
   },
   writer: {
     suffix: "-writer",

@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc -p .",
     "start": "if-env APP_ENV=production || if-env APP_ENV=staging && npm run start:prod || npm run start:dev",
-    "start:dev": "./node_modules/.bin/ts-node-dev --project tsconfig.json  --poll --interval 1000 --respawn --transpileOnly -- src/index.ts",
+    "start:dev": "./node_modules/.bin/ts-node-dev --project tsconfig.json  --poll --interval 1000 --respawn -- src/index.ts",
     "start:prod": "node ./dist/index.js"
   },
   "engines": {

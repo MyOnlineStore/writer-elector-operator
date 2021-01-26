@@ -9,7 +9,6 @@ export class WatchService {
   private readonly kubeConfig: KubeConfig;
   private readonly apiClient: CoreV1Api;
   private readonly watchers: Watcher<V1Endpoints>[] = [];
-  private readonly ignoreNames: string[];
 
   private endpoints: ElectedEndpointModel[] = [];
 
@@ -19,8 +18,6 @@ export class WatchService {
     this.kubeConfig.loadFromDefault();
 
     this.apiClient = this.kubeConfig.makeApiClient(CoreV1Api);
-
-    this.ignoreNames = Config.watch.ignore.split(",").map(i => i.trim()).filter(i => i);
   }
 
   public init() {
@@ -59,14 +56,16 @@ export class WatchService {
 
   private async onEndpointChanged(endpoint: V1Endpoints): Promise<void> {
     if (endpoint.metadata && endpoint.metadata.name && endpoint.metadata.namespace && endpoint.subsets && endpoint.subsets.length > 0) {
-      // Check if name contains part to ignore
-      let shouldIgnore = this.ignoreNames.find(i => endpoint.metadata?.name && endpoint.metadata.name.indexOf(i) > -1);
-      if (shouldIgnore) {
+      if (endpoint.metadata.labels && endpoint.metadata.labels["app.kubernetes.io/managed-by"] === Config.info.name) {
+        // ignore own endpoints
         return;
       }
 
       let namespace: string = endpoint.metadata.namespace;
       let writerName = endpoint.metadata.name + Config.writer.suffix;
+      if (endpoint.metadata.labels && endpoint.metadata.labels["myonlinestore.com/writer-elector-service-name"]) {
+        writerName = endpoint.metadata.labels["myonlinestore.com/writer-elector-service-name"];
+      }
 
       // Check Writer Endpoints
       let writerEndpoint: V1Endpoints | undefined;
@@ -109,14 +108,16 @@ export class WatchService {
    */
   private async onEndpointDeleted(endpoint: V1Endpoints): Promise<void> {
     if (endpoint.metadata && endpoint.metadata.name && endpoint.metadata.namespace) {
-      // Check if name contains part to ignore
-      let shouldIgnore = this.ignoreNames.find(i => endpoint.metadata?.name && endpoint.metadata.name.indexOf(i) > -1);
-      if (shouldIgnore) {
+      if (endpoint.metadata.labels && endpoint.metadata.labels["app.kubernetes.io/managed-by"] === Config.info.name) {
+        // ignore own endpoints
         return;
       }
 
       let namespace: string = endpoint.metadata.namespace;
       let writerName = endpoint.metadata.name + Config.writer.suffix;
+      if (endpoint.metadata.labels && endpoint.metadata.labels["myonlinestore.com/writer-elector-service-name"]) {
+        writerName = endpoint.metadata.labels["myonlinestore.com/writer-elector-service-name"];
+      }
 
       // Delete Writer Endpoint
       let writerEndpoint: V1Endpoints | undefined;
@@ -272,6 +273,7 @@ export class WatchService {
           newLabels[splittedPair[0].trim()] = splittedPair[1].trim();
         }
       }
+      newLabels["app.kubernetes.io/managed-by"] = Config.info.name;
 
       // Create Endpoint definition
       let allAddreses: V1EndpointAddress[] | undefined = undefined;
@@ -341,6 +343,7 @@ export class WatchService {
         let splittedPair = pair.split("=");
         newLabels[splittedPair[0].trim()] = splittedPair[1].trim();
       }
+      newLabels["app.kubernetes.io/managed-by"] = Config.info.name;
 
       // Create Service definition
       let newWriterService: V1Service = {
