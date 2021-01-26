@@ -14,8 +14,8 @@ export class MetricsService {
   });
 
   private endpointGauge = new Gauge({
-    name: "percona_writer_elector_endpoints",
-    help: "Endpoints managed by the percona-writer-elector-operator",
+    name: "writer_elector_endpoints",
+    help: "Endpoints managed by the writer-elector-operator",
     labelNames: ["namespace", "endpoint", "pod", "role"]
   });
 

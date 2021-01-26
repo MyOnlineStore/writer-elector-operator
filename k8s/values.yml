@@ -26,4 +26,4 @@ prometheus:
 
 serviceAccount:
   enabled: true
-  name: namespace-operator-percona-writer-elector-operator
+  name: namespace-operator-writer-elector-operator

@@ -5,7 +5,7 @@ import * as yaml from "yaml";
 export const Config = {
 
   info: {
-    name: "percona-writer-elector-operator"
+    name: "writer-elector-operator"
   },
 
   logging: {
@@ -22,14 +22,12 @@ export const Config = {
 
   watch: {
     namespaces: "*",
-    selector: "app.kubernetes.io/name=percona-xtradb-cluster",
+    selector: "myonlinestore.com/writer-elector=writer-elector-operator",
     ignore: "-unready"
   },
   writer: {
     suffix: "-writer",
-    overwrite: {
-      labels: "app.kubernetes.io/name=percona-xtradb-cluster-writer"
-    }
+    overwrite: {}
   }
 
 };

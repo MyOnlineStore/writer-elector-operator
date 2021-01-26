@@ -1,7 +1,7 @@
 {
-  "name": "@myonlinestore/percona-writer-elector-operator",
-  "homepage": "https://github.com/MyOnlineStore/percona-writer-elector-operator",
-  "description": "K8s operator for creating a single writer endpoint for a percona cluster created with the pxc-operator",
+  "name": "@myonlinestore/writer-elector-operator",
+  "homepage": "https://github.com/MyOnlineStore/writer-elector-operator",
+  "description": "K8s operator for creating a single writer Endpoint from a Kubernetes Endpoints resource.",
   "version": "0.1.0",
   "license": "GNU GPLv3",
   "private": true,
