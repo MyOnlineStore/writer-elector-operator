@@ -27,7 +27,9 @@ export const Config = {
   },
   writer: {
     suffix: "-writer",
-    overwrite: {}
+    overwrite: {
+      labels: ""
+    }
   }
 
 };
