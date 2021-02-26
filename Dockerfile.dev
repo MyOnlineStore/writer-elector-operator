@@ -13,11 +13,11 @@ WORKDIR /srv/app
 # as well.
 # This command will also cat the npm-debug.log file after the
 # build, if it exists.
-COPY package.json package-lock.json tsconfig.json ./
+COPY package.json package-lock.json tsconfig.json .npmrc ./
 RUN npm ci --unsafe-perm || \
   ((if [ -f npm-debug.log ]; then \
-      cat npm-debug.log; \
-    fi) && false)
+  cat npm-debug.log; \
+  fi) && false)
 
 COPY . ./
 CMD npm run start:dev
