@@ -1,6 +1,13 @@
+{% for line in warningText.lines %}
+# {{ line }}
+{% endfor %}
+
 name: CI
 
 on: push
+
+env:
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
   test:
@@ -10,9 +17,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    # Configure npm to pull from private github repos
+    - name: Setup npm authentication
+      run: |
+        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
+
     # Build the Docker image
     - name: Build Image
       env:
         DOCKER_BUILDKIT: 1
       run: |
-        docker build .
+        docker build --secret id=npm_rc,src=.npmrc .
