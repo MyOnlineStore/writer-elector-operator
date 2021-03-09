@@ -11,7 +11,7 @@ DEFAULT_GKE_CLUSTER="mos-dev01"
 
 DEFAULT_ENV="stage"
 DEFAULT_NAMESPACE="stage"
-DEFAULT_CHART_VERSION="0.3.3"
+DEFAULT_CHART_VERSION="0.4.0"
 DEFAULT_CHART="mos/deployment"
 
 function showUsage() {

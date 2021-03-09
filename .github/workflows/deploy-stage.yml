@@ -27,7 +27,7 @@ env:
 
   PROJECT_NAME: writer-elector-operator
   HELM_VERSION: v3.2.4
-  CHART_VERSION: 0.3.3
+  CHART_VERSION: 0.4.0
 
 jobs:
   build:
