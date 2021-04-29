@@ -41,3 +41,6 @@ RUN --mount=type=secret,id=npm_rc,dst=/srv/app/.npmrc \
 
 USER 1001
 CMD ["node", "./dist/index.js"]
+
+ARG COMMIT_HASH
+ENV COMMIT_HASH=${COMMIT_HASH}
