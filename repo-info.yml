@@ -11,3 +11,6 @@ deploy:
   prod:
     enabled: true
     namespace: operator
+
+nodejs:
+  version: "15"
