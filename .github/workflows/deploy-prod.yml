@@ -58,7 +58,6 @@ jobs:
       uses: ./.github/actions/pablo
       with:
         command: docker.build-and-push
-        secrets: id=npm_rc,src=.npmrc
 
     outputs:
       imageHash: ${{ steps.dockerBuild.outputs.imageHash }}
