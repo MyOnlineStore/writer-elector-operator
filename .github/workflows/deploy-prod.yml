@@ -2,7 +2,7 @@
 # Managed by github.com/MyOnlineStore/repo-templating
 # Changing this file will end badly, be wary.
 
-name: "Deploy to production"
+name: "Deploy writer-elector-operator to production"
 
 on:
   push:
@@ -11,6 +11,7 @@ on:
 
 env:
   PROJECT_NAME: writer-elector-operator
+  TEAM: csi
   APP_ENV: prod
   NAMESPACE: operator
   HELM_CHART: "deployment"
@@ -21,6 +22,7 @@ env:
   MOS_EU_GITHUB_TOKEN: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
   MOS_EU_GITHUB_USERNAME: ${{ secrets.MOS_EU_GITHUB_USERNAME }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  SLACK_TOKEN: ${{ secrets.PABLO_SLACK_TOKEN }}
 
 
   GKE_KEY: ${{ secrets.GKE_KEY }}
@@ -87,3 +89,25 @@ jobs:
         helmChartVersion: ${{ env.HELM_CHART_MAJOR_VERSION }}
         imageHash: ${{ needs.build.outputs.imageHash }}
         imageTag: ${{ needs.build.outputs.imageTag }}
+  notify:
+    name: Notify
+    runs-on: self-hosted
+    if: success() || failure()
+    needs:
+    - build
+    - deploy
+    steps:
+    - name: Checking out Pablo
+      uses: actions/checkout@v2
+      with:
+        repository: MyOnlineStore/pablo
+        ref: ${{ env.PABLO_VERSION }}
+        token: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
+        path: .github/actions/pablo
+
+    - name: Notify slack
+      uses: ./.github/actions/pablo
+      with:
+        command: slack.notify-complete
+        status: ${{ needs.build.result }},${{ needs.deploy.result }}
+
