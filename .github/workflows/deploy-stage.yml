@@ -11,7 +11,7 @@ on:
 
 env:
   PROJECT_NAME: writer-elector-operator
-  TEAM: dev
+  TEAM: csi
   APP_ENV: stage
   NAMESPACE: operator
   HELM_CHART: "deployment"
