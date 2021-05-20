@@ -1,13 +1,16 @@
 
 export interface ElectedEndpointModel {
 
-  pods: Array<{
-    name: string;
-    role: ElectedEndpointRole
-  }>;
+  pods: Array<ElectedPodModel>;
   name: string;
   namespace: string;
+  ready: boolean;
 
+}
+
+export interface ElectedPodModel {
+  name: string;
+  role: ElectedEndpointRole
 }
 
 export const ElectedEndpointRoles = [

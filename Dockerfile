@@ -4,7 +4,7 @@
 # Managed by github.com/MyOnlineStore/repo-templating
 # Changing this file will end badly, be wary.
 
-FROM node:12-alpine
+FROM node:15-alpine
 
 WORKDIR /srv/app
 
@@ -16,8 +16,7 @@ WORKDIR /srv/app
 # This command will also cat the npm-debug.log file after the
 # build, if it exists.
 COPY package.json package-lock.json tsconfig.json ./
-RUN --mount=type=secret,id=npm_rc,dst=/srv/app/.npmrc \
-  npm ci --unsafe-perm || \
+RUN npm ci --unsafe-perm || \
   ((if [ -f npm-debug.log ]; then \
   cat npm-debug.log; \
   fi) && false)
@@ -25,7 +24,7 @@ RUN --mount=type=secret,id=npm_rc,dst=/srv/app/.npmrc \
 COPY . ./
 RUN npm run build
 
-FROM node:12-alpine
+FROM node:15-alpine
 
 ENV NODE_ENV=production
 
@@ -36,7 +35,7 @@ COPY --chown=1001 --from=0 /srv/app/dist /srv/app/dist
 COPY --chown=1001 --from=0 /srv/app/config /srv/app/config
 COPY --chown=1001 --from=0 /srv/app/package.json /srv/app/package-lock.json /srv/app/
 
-RUN --mount=type=secret,id=npm_rc,dst=/srv/app/.npmrc \
+RUN --mount=type=secret,id=npm_rc,dst=/srv/app/ \
   npm install --prod --save-exact
 
 USER 1001

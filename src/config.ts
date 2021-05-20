@@ -22,12 +22,16 @@ export const Config = {
 
   watch: {
     namespaces: "*",
-    selector: "myonlinestore.com/writer-elector=writer-elector-operator"
+    selector: "writer-elector.myonlinestore.com/operator=writer-elector-operator"
   },
   writer: {
     suffix: "-writer",
     overwrite: {
-      labels: "app.kubernetes.io/managed-by=writer-elector-operator"
+      labels: ""
+    },
+
+    psql: {
+      checkInterval: 5000
     }
   }
 

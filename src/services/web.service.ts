@@ -1,5 +1,5 @@
 
-import * as express from "express";
+import express from "express";
 import { Config } from "../config";
 
 /**
@@ -41,9 +41,9 @@ export class WebServer {
       res.status(500).send(`Internal server error`);
     });
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       app.listen(Config.server.port, () => {
-        console.info(`🚀  Server ready at http://localhost:` + Config.server.port)
+        console.info(`🚀  Server ready at http://localhost:` + Config.server.port);
         resolve();
       }).on('error', (err) => {
         reject(err);
