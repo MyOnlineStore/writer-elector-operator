@@ -282,6 +282,10 @@ export abstract class ElectionHandler {
       }
     } else if (hasEndpoints) {
       let newLabels = this._endpoints?.metadata?.labels || {};
+      // remove labels that start with service.kubernetes.io
+      Object.keys(newLabels).filter(label => label.startsWith("service.kubernetes.io")).forEach(label => {
+        delete newLabels[label];
+      });
 
       if (Config.writer.overwrite.labels) {
         for (let pair of Config.writer.overwrite.labels.split(",")) {
