@@ -363,6 +363,9 @@ export abstract class ElectionHandler {
 
 
   public error(message: any, ...optionalParams: any[]) {
+    if (message instanceof FriendlyError) {
+      message = message.message;
+    }
     console.error(`[${new Date().toISOString()}] [ERROR] [${this.id}]`, message, ...optionalParams.map(param => {
       if (param instanceof FriendlyError) {
         return param.message;

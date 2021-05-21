@@ -121,7 +121,11 @@ export class PostgresElectionHandler extends ElectionHandler {
       host: address.ip,
       user: username,
       password: password,
-      port: 5432
+      port: 5432,
+      database: "postgres",
+      keepAlive: false,
+      connectionTimeoutMillis: 1000,
+      query_timeout: 2000
     });
 
     await client.connect();
