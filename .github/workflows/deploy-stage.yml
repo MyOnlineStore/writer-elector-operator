@@ -19,10 +19,12 @@ env:
   PABLO_VERSION: "v2"
   GITHUB_SHA: ${{ github.sha }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
   MOS_EU_GITHUB_TOKEN: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
   MOS_EU_GITHUB_USERNAME: ${{ secrets.MOS_EU_GITHUB_USERNAME }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   SLACK_TOKEN: ${{ secrets.PABLO_SLACK_TOKEN }}
+  GRAFANA_TOKEN: ${{ secrets.GRAFANA_DEV_TOKEN }}
 
   GKE_KEY: ${{ secrets.GKE_DEVELOP_KEY }}
 
@@ -87,6 +89,7 @@ jobs:
           helmChartVersion: ${{ env.HELM_CHART_MAJOR_VERSION }}
           imageHash: ${{ needs.build.outputs.imageHash }}
           imageTag: ${{ needs.build.outputs.imageTag }}
+          lock: "true"
   notify:
     name: Notify
     runs-on: self-hosted
