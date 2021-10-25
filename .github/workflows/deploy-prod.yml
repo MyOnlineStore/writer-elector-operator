@@ -7,7 +7,7 @@ name: "Deploy writer-elector-operator to production"
 on:
   push:
     tags:
-    - '*'
+      - "*"
 
 env:
   PROJECT_NAME: writer-elector-operator
@@ -24,7 +24,6 @@ env:
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   SLACK_TOKEN: ${{ secrets.PABLO_SLACK_TOKEN }}
 
-
   GKE_KEY: ${{ secrets.GKE_KEY }}
 
 jobs:
@@ -32,32 +31,32 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Checking out Pablo
-      uses: actions/checkout@v2
-      with:
-        repository: MyOnlineStore/pablo
-        ref: ${{ env.PABLO_VERSION }}
-        token: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
-        path: .github/actions/pablo
+      - name: Checking out Pablo
+        uses: actions/checkout@v2
+        with:
+          repository: MyOnlineStore/pablo
+          ref: ${{ env.PABLO_VERSION }}
+          token: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
+          path: .github/actions/pablo
 
-    # Setup gcloud CLI
-    - name: Setup gcloud CLI
-      uses: google-github-actions/setup-gcloud@master
+      # Setup gcloud CLI
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@master
 
-    # Configure npm to pull from private github repos
-    - name: Setup npm authentication
-      run: |
-        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
+      # Configure npm to pull from private github repos
+      - name: Setup npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
 
-    # Build and push the Docker image
-    - name: Build and Push Image
-      id: dockerBuild
-      uses: ./.github/actions/pablo
-      with:
-        command: docker.build-and-push
+      # Build and push the Docker image
+      - name: Build and Push Image
+        id: dockerBuild
+        uses: ./.github/actions/pablo
+        with:
+          command: docker.build-and-push
 
     outputs:
       imageHash: ${{ steps.dockerBuild.outputs.imageHash }}
@@ -68,45 +67,44 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Checking out Pablo
-      uses: actions/checkout@v2
-      with:
-        repository: MyOnlineStore/pablo
-        ref: ${{ env.PABLO_VERSION }}
-        token: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
-        path: .github/actions/pablo
+      - name: Checking out Pablo
+        uses: actions/checkout@v2
+        with:
+          repository: MyOnlineStore/pablo
+          ref: ${{ env.PABLO_VERSION }}
+          token: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
+          path: .github/actions/pablo
 
-    # Deploy
-    - name: Deploy
-      uses: ./.github/actions/pablo
-      with:
-        command: kubernetes.rolling-deployment
-        helmChart: ${{ env.HELM_CHART }}
-        helmChartVersion: ${{ env.HELM_CHART_MAJOR_VERSION }}
-        imageHash: ${{ needs.build.outputs.imageHash }}
-        imageTag: ${{ needs.build.outputs.imageTag }}
+      # Deploy
+      - name: Deploy
+        uses: ./.github/actions/pablo
+        with:
+          command: kubernetes.rolling-deployment
+          helmChart: ${{ env.HELM_CHART }}
+          helmChartVersion: ${{ env.HELM_CHART_MAJOR_VERSION }}
+          imageHash: ${{ needs.build.outputs.imageHash }}
+          imageTag: ${{ needs.build.outputs.imageTag }}
   notify:
     name: Notify
     runs-on: self-hosted
     if: success() || failure()
     needs:
-    - build
-    - deploy
+      - build
+      - deploy
     steps:
-    - name: Checking out Pablo
-      uses: actions/checkout@v2
-      with:
-        repository: MyOnlineStore/pablo
-        ref: ${{ env.PABLO_VERSION }}
-        token: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
-        path: .github/actions/pablo
+      - name: Checking out Pablo
+        uses: actions/checkout@v2
+        with:
+          repository: MyOnlineStore/pablo
+          ref: ${{ env.PABLO_VERSION }}
+          token: ${{ secrets.MOS_EU_GITHUB_TOKEN }}
+          path: .github/actions/pablo
 
-    - name: Notify slack
-      uses: ./.github/actions/pablo
-      with:
-        command: slack.notify-complete
-        status: ${{ needs.build.result }},${{ needs.deploy.result }}
-
+      - name: Notify slack
+        uses: ./.github/actions/pablo
+        with:
+          command: slack.notify-complete
+          status: ${{ needs.build.result }},${{ needs.deploy.result }}
