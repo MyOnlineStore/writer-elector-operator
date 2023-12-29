@@ -1,6 +1,7 @@
 name: "Deploy writer-elector-operator to stage"
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
